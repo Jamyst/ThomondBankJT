@@ -1,8 +1,7 @@
-package gui;
+package data;
 
 import java.time.LocalDate;
 
-// Abstract Person class
 abstract class Person {
     protected String firstName;
     protected String lastName;

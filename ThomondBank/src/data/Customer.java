@@ -1,9 +1,8 @@
-package gui;
+package data;
 
 import java.time.LocalDate;
 
-// Customer class
-class Customer extends Person {
+public class Customer extends Person {
     private int custNo;
 
     public Customer(String firstName, String lastName, String address, LocalDate dob, int custNo) {
@@ -11,5 +10,8 @@ class Customer extends Person {
         this.custNo = custNo;
     }
 
-    public int getCustNo() { return custNo; }
+    public int getCustNo()
+    {
+        return custNo;
+    }
 }

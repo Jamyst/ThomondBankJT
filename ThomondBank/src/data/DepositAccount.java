@@ -1,15 +1,10 @@
-package gui;
+package data;
 
-// Deposit Account class
-class DepositAccount extends Account {
+public class DepositAccount extends Account {
     private static double AIR = 0.02;
 
     public DepositAccount(int id, int custNo, double balance) {
         super(id, custNo, balance);
-    }
-
-    public DepositAccount(int id, int custNo) {
-        super(id, custNo);
     }
 
     @Override
@@ -19,6 +14,8 @@ class DepositAccount extends Account {
         }
     }
 
-    public static void setAIR(double air) { AIR = air; }
-    public static double getAIR() { return AIR; }
+    public static void setAIR(double air) {
+        AIR = air; }
+    public static double getAIR() {
+        return AIR; }
 }

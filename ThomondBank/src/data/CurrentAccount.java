@@ -1,6 +1,6 @@
-package gui;
+package data;
 
-// Current Account class
+
 class CurrentAccount extends Account {
     private static double AIR = 0.005;
     private double overdraft;
@@ -17,8 +17,15 @@ class CurrentAccount extends Account {
         }
     }
 
-    public static void setAIR(double air) { AIR = air; }
-    public static double getAIR() { return AIR; }
-    public void setOverdraft(double overdraft) { this.overdraft = overdraft; }
-    public double getOverdraft() { return overdraft; }
+    public static void setAIR(double air) {
+        AIR = air; }
+
+    public static double getAIR() {
+        return AIR; }
+
+    public void setOverdraft(double overdraft) {
+        this.overdraft = overdraft; }
+
+    public double getOverdraft() {
+        return overdraft; }
 }

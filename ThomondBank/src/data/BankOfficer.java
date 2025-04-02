@@ -1,8 +1,8 @@
-package gui;
+package data;
 
 import java.time.LocalDate;
 
-// Bank Officer class
+
 class BankOfficer extends BankStaff {
     private String jobTitle;
 
@@ -11,5 +11,6 @@ class BankOfficer extends BankStaff {
         this.jobTitle = jobTitle;
     }
 
-    public String getJobTitle() { return jobTitle; }
+    public String getJobTitle() {
+        return jobTitle; }
 }
