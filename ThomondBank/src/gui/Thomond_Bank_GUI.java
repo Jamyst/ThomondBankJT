@@ -103,7 +103,6 @@ public class Thomond_Bank_GUI {
 
                     Account account = ThomondBank.getAccountById(accountId);
 
-                    // Check if account exists
                     if (account != null) {
                         ATMAccountIdTxt.setEditable(false);
                         radioButtonPnl.setVisible(true);
@@ -141,12 +140,13 @@ public class Thomond_Bank_GUI {
 
             public void depositMoney() {
                 int accountId = Integer.parseInt(ATMAccountIdTxt.getText().trim());
-                String amountInput = JOptionPane.showInputDialog("Enter Deposit Amount");
+                String amountInput = JOptionPane.showInputDialog("Enter deposit amount:");
 
                 try {
 
                     if (amountInput.isEmpty()) {
-                        JOptionPane.showMessageDialog(rootPanel, "Error: Deposit amount cannot be empty!");
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Error: Deposit amount cannot be empty!");
                         return;
                     }
 
@@ -154,12 +154,11 @@ public class Thomond_Bank_GUI {
 
                     Account account = ThomondBank.getAccountById(accountId);
 
-                    // Check if account exists to deposit into
                     if (account != null) {
                         if (amount > 0) {
                             account.deposit(amount);
                             JOptionPane.showMessageDialog(rootPanel,
-                                    "Deposit successful!");
+                                    "Updated Balance: €" + account.getBalance());
 
                         } else {
                             JOptionPane.showMessageDialog(rootPanel,
@@ -184,12 +183,13 @@ public class Thomond_Bank_GUI {
             }
 
             public void checkBalance() {
-                int accountId = Integer.parseInt(ATMAccountIdTxt.getText().trim()); // Read input from text field
+                int accountId = Integer.parseInt(ATMAccountIdTxt.getText().trim());
 
                     Account account = ThomondBank.getAccountById(accountId);
 
                     if (account != null) {
-                        JOptionPane.showMessageDialog(rootPanel, "Current Balance: $" + account.getBalance());
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Account ID: " + accountId + " | Balance: €" + account.getBalance());
                     }
                 }
         });
@@ -204,32 +204,60 @@ public class Thomond_Bank_GUI {
             }
 
             public void withdrawMoney() {
-                String input = ATMAccountIdTxt.getText().trim(); // Read account ID input
-                String amountInput = JOptionPane.showInputDialog("Enter the amount you want to withdraw");
+
 
                 try {
 
-                    if (amountInput.isEmpty()) {
-                        JOptionPane.showMessageDialog(rootPanel, "Error: Withdrawal amount cannot be empty!");
-                    }
+
+                    String input = ATMAccountIdTxt.getText().trim();
 
                     int accountId = Integer.parseInt(input);
-                    double amount = Double.parseDouble(amountInput);
-
                     Account account = ThomondBank.getAccountById(accountId);
 
-                    // Check if account exists
+                    double amount = Double.parseDouble(JOptionPane.showInputDialog
+                            ("Balance: €" + account.getBalance() + " | Enter withdrawal amount"));
+
+
                     if (account != null) {
-                        // Check if the account is a DepositAccount or CurrentAccount
+
                         if (account instanceof DepositAccount) {
-                            (account).withdraw(amount);
-                        } else if (account instanceof CurrentAccount) {
-                            (account).withdraw(amount);
+
+                            if (amount <= account.getBalance()) {
+                                account.withdraw(amount);
+                            } else {
+                                JOptionPane.showMessageDialog(rootPanel,
+                                        "Error: Amount exceeds available balance!");
+                            }
+
                         }
 
-                        JOptionPane.showMessageDialog(rootPanel,
-                                "Withdrawal successful.");
+                        else if(account instanceof CurrentAccount) {
+                            CurrentAccount currentAcc = (CurrentAccount) account;
+                            double maxWithdrawable = account.getBalance() + currentAcc.getOverdraft();
+
+                            if (amount <= maxWithdrawable) {
+                                account.withdraw(amount);
+                            } else {
+                                JOptionPane.showMessageDialog(rootPanel,
+                                        "Error: Amount exceeds available balance!");
+                            }
+
+                        }
+
                     }
+
+
+                    if(amount > 0) {
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Updated balance: €" + account.getBalance());
+
+                    }
+                    else {
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Error: Enter a positive withdrawal amount!");
+                    }
+
+
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(rootPanel,
                             "Error: Enter a valid numeric withdrawal amount!");
@@ -260,12 +288,11 @@ public class Thomond_Bank_GUI {
                     radioButtonPnl.setVisible(false);
                     ButtonsPnl.setVisible(false);
 
-                    JOptionPane.showMessageDialog(rootPanel, "You have been logged out successfully.");
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "You have been logged out successfully.");
                 }
             }
         });
-
-
 
 
 
