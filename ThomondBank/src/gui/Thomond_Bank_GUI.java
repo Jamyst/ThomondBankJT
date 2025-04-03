@@ -62,6 +62,9 @@ public class Thomond_Bank_GUI {
     private JLabel overdraftLimitLbl;
     private JLabel newOverdraftLimitLbl;
     private JLabel ATMAccountIdLbl;
+    private JPanel bankManagerPnl;
+    private JButton createBankOfficerButton;
+    private JButton listAllStaffButton;
 
     public static ArrayList<Account> thomondAccounts = new ArrayList<>();
     static ArrayList<BankStaff> thomondStaff = new ArrayList<>();
@@ -76,6 +79,7 @@ public class Thomond_Bank_GUI {
         overDraftTabPane.setVisible(false);
 
         setUpListeners();
+
 
     }
 
@@ -217,9 +221,6 @@ public class Thomond_Bank_GUI {
                     double amount = Double.parseDouble(JOptionPane.showInputDialog
                             ("Balance: €" + account.getBalance() + " | Enter withdrawal amount"));
 
-
-                    if (account != null) {
-
                         if (account instanceof DepositAccount) {
 
                             if (amount <= account.getBalance()) {
@@ -243,8 +244,6 @@ public class Thomond_Bank_GUI {
                             }
 
                         }
-
-                    }
 
 
                     if(amount > 0) {
@@ -297,7 +296,10 @@ public class Thomond_Bank_GUI {
 
 
 
+
         //BANK OFFICER EVENTS
+
+        //Bank Officer 'Create Account' Panel Button
 
         createNewAccountButton.addActionListener(new ActionListener() {
             @Override
@@ -306,9 +308,103 @@ public class Thomond_Bank_GUI {
                 accountCreationTabPane.setVisible(true);
                 changeAIRTabPane.setVisible(false);
                 overDraftTabPane.setVisible(false);
+                overdraftLbl.setVisible(false);
+                overdraftTxt.setVisible(false);
+                currentRadioButton.setSelected(false);
+                depositRadioButton.setSelected(false);
+
 
             }
         });
+
+        currentRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                overdraftLbl.setVisible(true);
+                overdraftTxt.setVisible(true);
+
+            }
+        });
+
+
+        //Bank Officer Add Account Button
+
+        addNewAccountButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createNewAccount();
+            }
+
+            public void createNewAccount() {
+                String accountIdInput = accountIdTxt.getText().trim();
+                String overdraftInput = overdraftTxt.getText().trim();
+
+                try {
+
+                    int accountId = Integer.parseInt(accountIdInput);
+
+                    for (Account acc : Thomond_Bank_GUI.thomondAccounts) {
+                        if (acc.getId() == accountId) {
+                            JOptionPane.showMessageDialog(rootPanel,
+                                    "Error: Account ID already exists!");
+                        }
+                    }
+
+
+                    if (depositRadioButton.isSelected()) {
+                        overdraftLbl.setVisible(false);
+                        overdraftTxt.setVisible(false);
+
+                        DepositAccount newAccount = new DepositAccount(accountId, accountId, 0.0);
+                        Thomond_Bank_GUI.thomondAccounts.add(newAccount);
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Deposit Account created successfully!");
+
+                    } else if (currentRadioButton.isSelected()) {
+
+                        if (overdraftInput.isEmpty()) {
+                            JOptionPane.showMessageDialog(rootPanel,
+                                    "Error: Please enter an overdraft limit for Current Account!");
+                        }
+
+                        try {
+
+                            double overdraftLimit = Double.parseDouble(overdraftInput);
+
+                            if (overdraftLimit < 0) {
+                                JOptionPane.showMessageDialog(rootPanel,
+                                        "Error: Overdraft limit cannot be negative!");
+                            }
+
+                            // Create a Current Account
+                            CurrentAccount newAccount = new CurrentAccount(accountId, accountId,
+                                    0.0, overdraftLimit);
+                            Thomond_Bank_GUI.thomondAccounts.add(newAccount);
+                            JOptionPane.showMessageDialog(rootPanel,
+                                    "Current Account created successfully!");
+
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(rootPanel,
+                                    "Error: Enter a valid numeric overdraft limit!");
+                        }
+
+                    } else {
+                        JOptionPane.showMessageDialog(rootPanel, "Error: Please select an account type!");
+                    }
+
+                    accountIdTxt.setText("");
+                    overdraftTxt.setText("");
+                    currentRadioButton.setSelected(false);
+                    depositRadioButton.setSelected(false);
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(rootPanel, "Error: Enter a valid numeric Account ID!");
+                }
+            }
+        });
+
+
 
         changeAIRButton.addActionListener(new ActionListener() {
             @Override
