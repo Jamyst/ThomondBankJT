@@ -122,6 +122,7 @@ public class Thomond_Bank_GUI {
 
                     else{
                         JOptionPane.showMessageDialog(rootPanel, "Account not found");
+
                     }
 
                 } catch (NumberFormatException ex) {
@@ -167,6 +168,7 @@ public class Thomond_Bank_GUI {
                         } else {
                             JOptionPane.showMessageDialog(rootPanel,
                                     "Error: Enter a positive deposit amount!");
+
                         }
                     }
                 } catch (NumberFormatException ex) {
@@ -228,6 +230,7 @@ public class Thomond_Bank_GUI {
                             } else {
                                 JOptionPane.showMessageDialog(rootPanel,
                                         "Error: Amount exceeds available balance!");
+                                return;
                             }
 
                         }
@@ -241,6 +244,7 @@ public class Thomond_Bank_GUI {
                             } else {
                                 JOptionPane.showMessageDialog(rootPanel,
                                         "Error: Amount exceeds available balance!");
+                                return;
                             }
 
                         }
@@ -254,6 +258,7 @@ public class Thomond_Bank_GUI {
                     else {
                     JOptionPane.showMessageDialog(rootPanel,
                             "Error: Enter a positive withdrawal amount!");
+
                     }
 
 
@@ -348,6 +353,7 @@ public class Thomond_Bank_GUI {
                         if (acc.getId() == accountId) {
                             JOptionPane.showMessageDialog(rootPanel,
                                     "Error: Account ID already exists!");
+                            return;
                         }
                     }
 
@@ -375,6 +381,7 @@ public class Thomond_Bank_GUI {
                             if (overdraftLimit < 0) {
                                 JOptionPane.showMessageDialog(rootPanel,
                                         "Error: Overdraft limit cannot be negative!");
+                                return;
                             }
 
                             // Create a Current Account
@@ -390,7 +397,9 @@ public class Thomond_Bank_GUI {
                         }
 
                     } else {
-                        JOptionPane.showMessageDialog(rootPanel, "Error: Please select an account type!");
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Error: Please select an account type!");
+                        return;
                     }
 
                     accountIdTxt.setText("");
@@ -399,12 +408,14 @@ public class Thomond_Bank_GUI {
                     depositRadioButton.setSelected(false);
 
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(rootPanel, "Error: Enter a valid numeric Account ID!");
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Error: Enter a valid numeric Account ID!");
                 }
             }
         });
 
 
+        //Bank Officer 'Change AIR' Panel Button
 
         changeAIRButton.addActionListener(new ActionListener() {
             @Override
@@ -416,6 +427,83 @@ public class Thomond_Bank_GUI {
 
             }
         });
+        
+
+        AIRDepositBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (AIRDepositBtn.isSelected()) {
+
+                    AIRTxt.setText(String.valueOf(DepositAccount.getAIR()));
+                }
+            }
+        });
+
+
+        AIRCurrentBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (AIRCurrentBtn.isSelected()) {
+
+                    AIRTxt.setText(String.valueOf(CurrentAccount.getAIR()));
+
+                }
+            }
+        });
+
+
+
+        //Bank Officer Change AIR Button
+
+        changeAIRBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                String newAirInput = newAIRTxt.getText().trim();
+
+
+                try {
+
+                    if (newAirInput.isEmpty()) {
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Error: AIR cannot be empty!");
+                        return;
+                    }
+
+                    double newAIR = Double.parseDouble(newAirInput);
+
+                    if (newAIR <= 0) {
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Error: Enter a valid positive AIR value!");
+                        return;
+                    }
+
+
+                    if (AIRDepositBtn.isSelected()) {
+                        DepositAccount.setAIR(newAIR);
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Deposit Account AIR updated to " + DepositAccount.getAIR());
+
+                    } else if (AIRCurrentBtn.isSelected()) {
+                        CurrentAccount.setAIR(newAIR);
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Current Account AIR updated to " + newAIR);
+                    }
+
+                    AIRTxt.setText("");
+                    newAIRTxt.setText("");
+                    AIRDepositBtn.setSelected(false);
+                    AIRCurrentBtn.setSelected(false);
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Error: Enter a valid numeric AIR value!");
+                }
+            }
+        });
+
 
         changeOverdraftLimitButton.addActionListener(new ActionListener() {
             @Override

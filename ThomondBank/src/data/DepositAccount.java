@@ -16,6 +16,7 @@ public class DepositAccount extends Account {
 
     public static void setAIR(double air) {
         AIR = air; }
+
     public static double getAIR() {
         return AIR; }
 }
