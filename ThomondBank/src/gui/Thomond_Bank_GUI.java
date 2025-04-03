@@ -2,6 +2,10 @@ package gui;
 
 import data.Account;
 import data.BankStaff;
+import data.CurrentAccount;
+import data.DepositAccount;
+import main.ThomondBank;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,6 +68,7 @@ public class Thomond_Bank_GUI {
 
 
     public Thomond_Bank_GUI() {
+
         ButtonsPnl.setVisible(false);
         radioButtonPnl.setVisible(false);
         accountCreationTabPane.setVisible(false);
@@ -72,65 +77,198 @@ public class Thomond_Bank_GUI {
 
         setUpListeners();
 
-
-
     }
+
+    //Method for action listeners
 
     private void setUpListeners() {
 
-        //CUSTOMER EVENTS
+        //Customer Actions:
+
+        //Customer Account Verification
 
         ATMAccountIdTxt.addActionListener(new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 validateAccount();
             }
 
-            private void validateAccount() {
-
+            public void validateAccount() {
                 String input = ATMAccountIdTxt.getText().trim();
-
-                // Check if input is empty
-                if (input.isEmpty()) {
-                    JOptionPane.showMessageDialog(rootPanel, "Error: Account ID cannot be empty!");
-                    return;
-                }
 
                 try {
 
                     int accountId = Integer.parseInt(input);
 
-                    // Check if account exists
-                    Account account = findAccount(accountId);
-                    if (account != null) {
-                        ATMAccountIdTxt.setEditable(false); // Disable text field after validation
-                        radioButtonPnl.setVisible(true);
-                        depositAccountRadioButton.setSelected(true);
+                    Account account = ThomondBank.getAccountById(accountId);
 
+                    // Check if account exists
+                    if (account != null) {
+                        ATMAccountIdTxt.setEditable(false);
+                        radioButtonPnl.setVisible(true);
                         ButtonsPnl.setVisible(true);
 
-                    } else {
+                        if (account instanceof DepositAccount) {
+                            depositAccountRadioButton.setSelected(true);
 
-                        JOptionPane.showMessageDialog(rootPanel, "Error: Account not found!");
+                        } else{
+                            currentAccountRadioButton.setSelected(true);
+                        }
                     }
-                } catch (NumberFormatException ex) {
 
+                    else{
+                        JOptionPane.showMessageDialog(rootPanel, "Account not found");
+                    }
+
+                } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(rootPanel, "Error: Enter a valid numeric Account ID!");
                 }
 
-            }
 
-            private Account findAccount(int accountId) {
-
-                for (Account acc : thomondAccounts) {
-                    if (acc.getId() == accountId) {
-                        return acc; // Account found
-                    }
-                }
-
-                return null;
             }
         });
+
+
+        //Customer Deposit Button
+
+        depositButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                depositMoney();
+            }
+
+            public void depositMoney() {
+                int accountId = Integer.parseInt(ATMAccountIdTxt.getText().trim());
+                String amountInput = JOptionPane.showInputDialog("Enter Deposit Amount");
+
+                try {
+
+                    if (amountInput.isEmpty()) {
+                        JOptionPane.showMessageDialog(rootPanel, "Error: Deposit amount cannot be empty!");
+                        return;
+                    }
+
+                    double amount = Double.parseDouble(amountInput);
+
+                    Account account = ThomondBank.getAccountById(accountId);
+
+                    // Check if account exists to deposit into
+                    if (account != null) {
+                        if (amount > 0) {
+                            account.deposit(amount);
+                            JOptionPane.showMessageDialog(rootPanel,
+                                    "Deposit successful!");
+
+                        } else {
+                            JOptionPane.showMessageDialog(rootPanel,
+                                    "Error: Enter a positive deposit amount!");
+                        }
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Error: Enter a valid numeric amount to deposit!");
+                }
+            }
+        });
+
+
+        //Customer Check Balance Button
+
+        checkBalanceButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                checkBalance();
+            }
+
+            public void checkBalance() {
+                int accountId = Integer.parseInt(ATMAccountIdTxt.getText().trim()); // Read input from text field
+
+                    Account account = ThomondBank.getAccountById(accountId);
+
+                    if (account != null) {
+                        JOptionPane.showMessageDialog(rootPanel, "Current Balance: $" + account.getBalance());
+                    }
+                }
+        });
+
+        //Customer Withdraw Button
+
+        withdrawButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                withdrawMoney();
+            }
+
+            public void withdrawMoney() {
+                String input = ATMAccountIdTxt.getText().trim(); // Read account ID input
+                String amountInput = JOptionPane.showInputDialog("Enter the amount you want to withdraw");
+
+                try {
+
+                    if (amountInput.isEmpty()) {
+                        JOptionPane.showMessageDialog(rootPanel, "Error: Withdrawal amount cannot be empty!");
+                    }
+
+                    int accountId = Integer.parseInt(input);
+                    double amount = Double.parseDouble(amountInput);
+
+                    Account account = ThomondBank.getAccountById(accountId);
+
+                    // Check if account exists
+                    if (account != null) {
+                        // Check if the account is a DepositAccount or CurrentAccount
+                        if (account instanceof DepositAccount) {
+                            (account).withdraw(amount);
+                        } else if (account instanceof CurrentAccount) {
+                            (account).withdraw(amount);
+                        }
+
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Withdrawal successful.");
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Error: Enter a valid numeric withdrawal amount!");
+                }
+            }
+        });
+
+
+        //Customer Log out button
+
+        logoutButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                logout();
+            }
+
+            public void logout() {
+
+                int confirm = JOptionPane.showConfirmDialog(rootPanel, "Are you sure you want to log out?",
+                        "Logout Confirmation", JOptionPane.YES_NO_OPTION);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    ATMAccountIdTxt.setText("");
+
+                    ATMAccountIdTxt.setEditable(true);
+
+                    radioButtonPnl.setVisible(false);
+                    ButtonsPnl.setVisible(false);
+
+                    JOptionPane.showMessageDialog(rootPanel, "You have been logged out successfully.");
+                }
+            }
+        });
+
+
+
+
+
 
         //BANK OFFICER EVENTS
 
@@ -168,94 +306,6 @@ public class Thomond_Bank_GUI {
         });
 
     }
-
-    //
-//    // Main class to manage the application
-//    public class ThomondBank {
-//        static ArrayList<Account> thomondAccounts = new ArrayList<>();
-//        static ArrayList<BankStaff> thomondStaff = new ArrayList<>();
-//
-//        public static void main(String[] args) {
-//            SwingUtilities.invokeLater(() -> new Thomond_Bank());
-//        }
-//    }
-//
-//    // GUI Class
-//    public class Thomand_Bank extends JFrame {
-//        private JPanel rootPanel;
-//        private JTextField ATMAccountIdTxt, amountField;
-//        private JTextArea displayArea;
-//
-//        public Thomond_Bank() {
-//            setTitle("Thomond Bank GUI");
-//            setSize(500, 400);
-//            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            setLayout(new FlowLayout());
-//
-//            add(new JLabel("Customer No:"));
-//            ATMAccountIdTxt = new JTextField(10);
-//            add(ATMAccountIdTxt);
-//
-//            add(new JLabel("Amount:"));
-//            amountField = new JTextField(10);
-//            add(amountField);
-//
-//            JButton depositButton = new JButton("Deposit");
-//            JButton withdrawButton = new JButton("Withdraw");
-//            JButton checkBalanceButton = new JButton("Check Balance");
-//
-//            add(depositButton);
-//            add(withdrawButton);
-//            add(checkBalanceButton);
-//
-//            displayArea = new JTextArea(5, 30);
-//            add(new JScrollPane(displayArea));
-//
-//            depositButton.addActionListener(e -> depositMoney());
-//            withdrawButton.addActionListener(e -> withdrawMoney());
-//            checkBalanceButton.addActionListener(e -> checkBalance());
-//
-//            setVisible(true);
-//        }
-
-//        private Account findAccount(int custNo) {
-//            for (Account acc : ThomondBank.thomondAccounts) {
-//                if (acc.getCustNo() == custNo) {
-//                    return acc;
-//                }
-//            }
-//            return null;
-//        }
-//
-//        private void depositMoney() {
-//            int custNo = Integer.parseInt(ATMAccountIdTxt.getText());
-//            double amount = Double.parseDouble(amountField.getText());
-//            Account account = findAccount(custNo);
-//            if (account != null) {
-//                account.deposit(amount);
-//                displayArea.setText("Deposit successful. New Balance: " + account.getBalance());
-//            }
-//        }
-//
-//        private void withdrawMoney() {
-//            int custNo = Integer.parseInt(ATMAccountIdTxt.getText());
-//            double amount = Double.parseDouble(amountField.getText());
-//            Account account = findAccount(custNo);
-//            if (account != null) {
-//                account.withdraw(amount);
-//                displayArea.setText("Withdrawal successful. New Balance: " + account.getBalance());
-//            }
-//        }
-//
-//        private void checkBalance() {
-//            int custNo = Integer.parseInt(ATMAccountIdTxt.getText());
-//            Account account = findAccount(custNo);
-//            if (account != null) {
-//                displayArea.setText("Balance: " + account.getBalance());
-//            }
-//        }
-//    }
-
 
 
 }

@@ -3,6 +3,9 @@ package data;
 import java.time.LocalDate;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+
+import static gui.Thomond_Bank_GUI.thomondAccounts;
 
 public abstract class Account {
     protected int id;
@@ -15,6 +18,16 @@ public abstract class Account {
         this.custNo = custNo;
         this.balance = balance;
         this.dateCreated = LocalDate.now();
+    }
+
+
+    public static Account findAccount(int custNo, ArrayList<Account> accounts) {
+        for (Account acc : accounts) {
+            if (acc.getCustNo() == custNo) {
+                return acc;
+            }
+        }
+        return null; // Return null if account is not found
     }
 
     public abstract void withdraw(double amount);

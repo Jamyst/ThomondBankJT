@@ -1,13 +1,17 @@
 package data;
 
 
-class CurrentAccount extends Account {
+public class CurrentAccount extends Account {
     private static double AIR = 0.005;
     private double overdraft;
 
     public CurrentAccount(int id, int custNo, double balance, double overdraft) {
         super(id, custNo, balance);
         this.overdraft = overdraft;
+    }
+
+    public CurrentAccount(int id, int custNo, int balance) {
+        super(id, custNo, balance);
     }
 
     @Override
