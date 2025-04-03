@@ -80,13 +80,14 @@ public class Thomond_Bank_GUI {
 
         setUpListeners();
 
-
     }
+
 
     //Method for action listeners
 
     private void setUpListeners() {
 
+        
         //Customer Actions:
 
         //Customer Account Verification
@@ -200,6 +201,7 @@ public class Thomond_Bank_GUI {
                 }
         });
 
+
         //Customer Withdraw Button
 
         withdrawButton.addActionListener(new ActionListener() {
@@ -213,7 +215,6 @@ public class Thomond_Bank_GUI {
 
 
                 try {
-
 
                     String input = ATMAccountIdTxt.getText().trim();
 
@@ -505,6 +506,8 @@ public class Thomond_Bank_GUI {
         });
 
 
+        //Bank Officer 'Change Overdraft Limit' Panel Button
+
         changeOverdraftLimitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -512,9 +515,112 @@ public class Thomond_Bank_GUI {
                 accountCreationTabPane.setVisible(false);
                 changeAIRTabPane.setVisible(false);
                 overDraftTabPane.setVisible(true);
+                overdraftLimitTxt.setVisible(false);
+                newOverdraftLimitTxt.setVisible(false);
+                changeOverdraftLimitButton1.setVisible(false);
+                overdraftLimitLbl.setVisible(false);
+                newOverdraftLimitLbl.setVisible(false);
 
             }
         });
+
+
+        //Bank Officer Change Overdraft Limit Account Verification
+
+        overdraftAccIdTxt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String accountIdInput = overdraftAccIdTxt.getText().trim();
+
+                if (accountIdInput.isEmpty()) {
+                    JOptionPane.showMessageDialog(rootPanel, "Error: Account ID cannot be empty!");
+                    return;
+                }
+
+                try {
+                    int accountId = Integer.parseInt(accountIdInput);
+                    Account account = ThomondBank.getAccountById(accountId);
+
+
+                    if (account == null) {
+                        JOptionPane.showMessageDialog(rootPanel, "Error: Account not found!");
+
+                        return;
+                    }
+
+
+                    if (account instanceof CurrentAccount) {
+                        CurrentAccount currentAccount = (CurrentAccount) account;
+
+                        overdraftLimitTxt.setVisible(true);
+                        newOverdraftLimitTxt.setVisible(true);
+                        changeOverdraftLimitButton1.setVisible(true);
+                        overdraftLimitLbl.setVisible(true);
+                        newOverdraftLimitLbl.setVisible(true);
+
+                        overdraftLimitTxt.setText(String.valueOf(currentAccount.getOverdraft()));
+
+                    } else {
+
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Error: Overdraft applies only to Current Accounts!");
+                    }
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(rootPanel, "Error: Enter a valid numeric Account ID!");
+                }
+            }
+        });
+
+
+        //Bank Officer Change Overdraft Limit Button
+
+        changeOverdraftLimitButton1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                String accountIdInput = overdraftAccIdTxt.getText().trim();
+
+                try {
+
+                    int accountId = Integer.parseInt(accountIdInput);
+                    Account account = ThomondBank.getAccountById(accountId);
+
+                    CurrentAccount currentAccount;
+                    currentAccount = (CurrentAccount) account;
+
+                    overdraftLimitTxt.setText(String.valueOf(currentAccount.getOverdraft()));
+
+                    String newOverdraftInput = newOverdraftLimitTxt.getText().trim();
+                    if (newOverdraftInput.isEmpty()) {
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Error: New overdraft limit cannot be empty!");
+                        return;
+                    }
+
+                    double newOverdraftLimit = Double.parseDouble(newOverdraftInput);
+                    if (newOverdraftLimit < 0) {
+                        JOptionPane.showMessageDialog(rootPanel,
+                                "Error: Overdraft limit cannot be negative!");
+                        return;
+                    }
+
+                    currentAccount.setOverdraft(newOverdraftLimit);
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Overdraft limit updated successfully!");
+
+                    overdraftAccIdTxt.setText("");
+                    overdraftLimitTxt.setText("");
+                    newOverdraftLimitTxt.setText("");
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Error: Enter a valid numeric Account ID and Overdraft Limit!");
+                }
+            }
+        });
+
+
 
     }
 
