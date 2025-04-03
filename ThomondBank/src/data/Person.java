@@ -2,11 +2,11 @@ package data;
 
 import java.time.LocalDate;
 
-abstract class Person {
-    protected String firstName;
-    protected String lastName;
-    protected String address;
-    protected LocalDate dob;
+public abstract class Person {
+    public String firstName;
+    public String lastName;
+    public String address;
+    public LocalDate dob;
 
     public Person(String firstName, String lastName, String address, LocalDate dob) {
         this.firstName = firstName;

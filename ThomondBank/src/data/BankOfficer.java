@@ -3,7 +3,7 @@ package data;
 import java.time.LocalDate;
 
 
-class BankOfficer extends BankStaff {
+public class BankOfficer extends BankStaff {
     private String jobTitle;
 
     public BankOfficer(String firstName, String lastName, String address, LocalDate dob, int empNo, String jobTitle) {

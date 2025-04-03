@@ -1,14 +1,13 @@
 package gui;
 
-import data.Account;
-import data.BankStaff;
-import data.CurrentAccount;
-import data.DepositAccount;
+import data.*;
 import main.ThomondBank;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 public class Thomond_Bank_GUI {
@@ -65,9 +64,38 @@ public class Thomond_Bank_GUI {
     private JPanel bankManagerPnl;
     private JButton createBankOfficerButton;
     private JButton listAllStaffButton;
+    private JPanel createBankOfficerPnl;
+    private JTextField employeeFirstNameTxt;
+    private JTextField employeeLastNameTxt;
+    private JTextField employeeAddressTxt;
+    private JTextField employeeDobTxt;
+    private JTextField employeeIdTxt;
+    private JTextField jobTitleTxt;
+    private JLabel employeeFirstNameLbl;
+    private JLabel employeeLastNameLbl;
+    private JLabel employeeAddressLbl;
+    private JLabel employeeDobLbl;
+    private JLabel employeeIdLbl;
+    private JLabel jobTitleLbl;
+    private JButton createStaffAccountButton;
+    private JButton createCustomerButton;
+    private JTextField custFirstNameTxt;
+    private JTextField custLastNameTxt;
+    private JTextField custAddressTxt;
+    private JTextField custDobTxt;
+    private JTextField custIdTxt;
+    private JLabel custFirstNameLbl;
+    private JLabel custLastNameLbl;
+    private JLabel custAddressLbl;
+    private JLabel custDobLbl;
+    private JLabel custIdLbl;
+    private JPanel createCustomerPnl;
+    private JButton customerCreateButton;
+    private JButton listAllCustomersButton;
 
     public static ArrayList<Account> thomondAccounts = new ArrayList<>();
-    static ArrayList<BankStaff> thomondStaff = new ArrayList<>();
+    public static ArrayList<BankStaff> thomondStaff = new ArrayList<>();
+    public static ArrayList<Customer> thomondCustomers = new ArrayList<>();
 
 
     public Thomond_Bank_GUI() {
@@ -77,6 +105,8 @@ public class Thomond_Bank_GUI {
         accountCreationTabPane.setVisible(false);
         changeAIRTabPane.setVisible(false);
         overDraftTabPane.setVisible(false);
+        createBankOfficerPnl.setVisible(false);
+        createCustomerPnl.setVisible(false);
 
         setUpListeners();
 
@@ -318,6 +348,7 @@ public class Thomond_Bank_GUI {
                 overdraftTxt.setVisible(false);
                 currentRadioButton.setSelected(false);
                 depositRadioButton.setSelected(false);
+                createCustomerPnl.setVisible(false);
 
 
             }
@@ -339,6 +370,7 @@ public class Thomond_Bank_GUI {
         addNewAccountButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 createNewAccount();
             }
 
@@ -425,6 +457,7 @@ public class Thomond_Bank_GUI {
                 accountCreationTabPane.setVisible(false);
                 changeAIRTabPane.setVisible(true);
                 overDraftTabPane.setVisible(false);
+                createCustomerPnl.setVisible(false);
 
             }
         });
@@ -515,6 +548,7 @@ public class Thomond_Bank_GUI {
                 accountCreationTabPane.setVisible(false);
                 changeAIRTabPane.setVisible(false);
                 overDraftTabPane.setVisible(true);
+                createCustomerPnl.setVisible(false);
                 overdraftLimitTxt.setVisible(false);
                 newOverdraftLimitTxt.setVisible(false);
                 changeOverdraftLimitButton1.setVisible(false);
@@ -619,6 +653,264 @@ public class Thomond_Bank_GUI {
                 }
             }
         });
+
+        createCustomerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                createCustomerPnl.setVisible(true);
+                accountCreationTabPane.setVisible(false);
+                changeAIRTabPane.setVisible(false);
+                overDraftTabPane.setVisible(false);
+
+            }
+        });
+
+        customerCreateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                // Read inputs from text fields
+                String firstName = custFirstNameTxt.getText().trim();
+                String lastName = custLastNameTxt.getText().trim();
+                String address = custAddressTxt.getText().trim();
+                String dobInput = custDobTxt.getText().trim();
+                String customerIdInput = custIdTxt.getText().trim();
+
+                if (firstName.isEmpty()){
+                    JOptionPane.showMessageDialog(rootPanel, "First name cannot be empty!");
+                    return;
+                }
+
+                else if (lastName.isEmpty()){
+                    JOptionPane.showMessageDialog(rootPanel, "Last name cannot be empty!");
+                    return;
+                }
+
+                else if (address.isEmpty()){
+                    JOptionPane.showMessageDialog(rootPanel, "Address cannot be empty!");
+                    return;
+                }
+
+                else if (dobInput.isEmpty()){
+                    JOptionPane.showMessageDialog(rootPanel, "DOB cannot be empty!");
+                    return;
+                }
+
+                else if (customerIdInput.isEmpty()){
+                    JOptionPane.showMessageDialog(rootPanel, "Customer ID cannot be empty!");
+                    return;
+                }
+
+                try {
+
+                    LocalDate dob = LocalDate.parse(dobInput);
+                    int customerId = Integer.parseInt(customerIdInput);
+
+                    for (Customer existingCustomer : Thomond_Bank_GUI.thomondCustomers) {
+
+                        if (existingCustomer.getCustNo() == customerId) {
+
+                            JOptionPane.showMessageDialog(rootPanel,
+                                    "Customer ID already exists. Please choose a different ID.");
+                            return;
+                        }
+                    }
+
+                    Customer newCustomer = new Customer(firstName, lastName, address, dob, customerId);
+
+                    Thomond_Bank_GUI.thomondCustomers.add(newCustomer);
+
+
+                    JOptionPane.showMessageDialog(rootPanel, "Customer created successfully!");
+
+                    custFirstNameTxt.setText("");
+                    custLastNameTxt.setText("");
+                    custAddressTxt.setText("");
+                    custDobTxt.setText("");
+                    custIdTxt.setText("");
+
+                } catch (DateTimeParseException ex) {
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Invalid date format. Please use YYYY-MM-DD.");
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Invalid customer ID format. Please enter a valid number.");
+                }
+
+            }
+        });
+
+
+        listAllCustomersButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (Thomond_Bank_GUI.thomondCustomers.isEmpty()) {
+                    JOptionPane.showMessageDialog(rootPanel, "No customers found!");
+                    return;
+                }
+
+                for (Customer customer : Thomond_Bank_GUI.thomondCustomers) {
+
+                    System.out.println("---- Customers ----" +
+                            "\nFirst Name: " + customer.firstName +
+                            "\nLast Name: " + customer.lastName +
+                            "\nAddress: " + customer.address +
+                            "\nDate of Birth: " + customer.dob +
+                            "\nCustomer ID: " + customer.getCustNo() +
+                            "\n------------------------\n");
+                }
+            }
+        });
+
+
+
+        //BANK MANAGER EVENTS
+
+        //Bank Manager 'Create Bank Officer' Panel Button
+
+        createBankOfficerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                createBankOfficerPnl.setVisible(true);
+
+            }
+        });
+
+
+        //Bank Manager Finalize Create Bank Officer Button
+
+        createStaffAccountButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                String firstName = employeeFirstNameTxt.getText().trim();
+                String lastName = employeeLastNameTxt.getText().trim();
+                String address = employeeAddressTxt.getText().trim();
+                String dobInput = employeeDobTxt.getText().trim();
+                String empNoInput = employeeIdTxt.getText().trim();
+                String jobTitle = jobTitleTxt.getText().trim();
+
+
+                if (firstName.isEmpty()){
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Error: First name cannot be empty!");
+                    return;
+                }
+
+                else if (lastName.isEmpty()){
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Error: Last name cannot be empty!");
+                    return;
+                }
+
+                else if (address.isEmpty()){
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Error: Address cannot be empty!");
+                    return;
+                }
+
+                else if (dobInput.isEmpty()){
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Error: Date of Birth cannot be empty!");
+                    return;
+                }
+
+                else if (empNoInput.isEmpty()){
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Error: Employee No cannot be empty!");
+                    return;
+                }
+
+                else if (jobTitle.isEmpty()){
+                    JOptionPane.showMessageDialog(rootPanel,
+                            "Error: Job Title cannot be empty!");
+                    return;
+                }
+
+                LocalDate dob;
+                try {
+                    dob = LocalDate.parse(dobInput);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(rootPanel, "Error: Invalid Date Format (Use YYYY-MM-DD)!");
+                    return;
+                }
+
+                int empNo;
+                try {
+                    empNo = Integer.parseInt(empNoInput);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(rootPanel, "Error: Employee Number must be an integer!");
+                    return;
+                }
+
+
+                for (BankStaff staff : Thomond_Bank_GUI.thomondStaff) {
+                    if (staff instanceof BankOfficer && staff.empNo == empNo) {
+                        JOptionPane.showMessageDialog(rootPanel, "Error: Employee ID already exists! Choose another.");
+                        return;
+                    }
+                }
+
+
+                BankOfficer newOfficer = new BankOfficer(firstName, lastName, address, dob, empNo, jobTitle);
+
+                Thomond_Bank_GUI.thomondStaff.add(newOfficer);
+
+                JOptionPane.showMessageDialog(rootPanel, "Bank Officer Created Successfully!");
+
+                employeeFirstNameTxt.setText("");
+                employeeLastNameTxt.setText("");
+                employeeAddressTxt.setText("");
+                employeeDobTxt.setText("");
+                employeeIdTxt.setText("");
+                jobTitleTxt.setText("");
+
+            }
+
+        });
+
+
+        //Bank Manager List All Staff button
+
+        listAllStaffButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                System.out.println("---- Thomond Bank Staff ----");
+
+                if (Thomond_Bank_GUI.thomondStaff.isEmpty()) {
+                    System.out.println("No staff members found.");
+
+                } else {
+
+                    for (BankStaff staff : Thomond_Bank_GUI.thomondStaff) {
+
+                        String jobTitle;
+
+                        if (staff instanceof BankOfficer) {
+                            jobTitle = ((BankOfficer) staff).getJobTitle();
+                        } else {
+                            jobTitle = "Bank Manager";
+                        }
+
+                        System.out.println
+                                ("\nFirst Name: " + staff.firstName +
+                                "\nLast Name: " + staff.lastName +
+                                "\nAddress: " + staff.address +
+                                "\nDate of Birth: " + staff.dob +
+                                "\nJob Title: " + jobTitle +
+                                "\nEmployee ID: " + staff.empNo +
+                                "\n------------------------\n");
+                    }
+                }
+            }
+        });
+
+
+
 
 
 
