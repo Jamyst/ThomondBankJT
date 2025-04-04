@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Thomond_Bank_GUI {
     public JPanel rootPanel;
@@ -92,6 +93,11 @@ public class Thomond_Bank_GUI {
     private JPanel createCustomerPnl;
     private JButton customerCreateButton;
     private JButton listAllCustomersButton;
+    private JButton allTransactionsButton;
+    private JTextField transactionAccountTxt;
+    private JLabel transactionAccountIdLbl;
+    private JPanel transactionPnl;
+    private JButton showTransactionBtn;
 
     public static ArrayList<Account> thomondAccounts = new ArrayList<>();
     public static ArrayList<BankStaff> thomondStaff = new ArrayList<>();
@@ -107,8 +113,10 @@ public class Thomond_Bank_GUI {
         overDraftTabPane.setVisible(false);
         createBankOfficerPnl.setVisible(false);
         createCustomerPnl.setVisible(false);
+        transactionPnl.setVisible(false);
 
         setUpListeners();
+
 
     }
 
@@ -142,6 +150,7 @@ public class Thomond_Bank_GUI {
                         ATMAccountIdTxt.setEditable(false);
                         radioButtonPnl.setVisible(true);
                         ButtonsPnl.setVisible(true);
+
 
                         if (account instanceof DepositAccount) {
                             depositAccountRadioButton.setSelected(true);
@@ -195,6 +204,7 @@ public class Thomond_Bank_GUI {
                             account.deposit(amount);
                             JOptionPane.showMessageDialog(rootPanel,
                                     "Updated Balance: €" + account.getBalance());
+                                account.addTransaction("Deposit", amount);
 
                         } else {
                             JOptionPane.showMessageDialog(rootPanel,
@@ -284,6 +294,7 @@ public class Thomond_Bank_GUI {
                     if(amount > 0) {
                         JOptionPane.showMessageDialog(rootPanel,
                                 "Updated balance: €" + account.getBalance());
+                                account.addTransaction("Withdrawal", amount);
 
                     }
                     else {
@@ -349,6 +360,7 @@ public class Thomond_Bank_GUI {
                 currentRadioButton.setSelected(false);
                 depositRadioButton.setSelected(false);
                 createCustomerPnl.setVisible(false);
+                transactionPnl.setVisible(false);
 
 
             }
@@ -458,6 +470,7 @@ public class Thomond_Bank_GUI {
                 changeAIRTabPane.setVisible(true);
                 overDraftTabPane.setVisible(false);
                 createCustomerPnl.setVisible(false);
+                transactionPnl.setVisible(false);
 
             }
         });
@@ -554,6 +567,7 @@ public class Thomond_Bank_GUI {
                 changeOverdraftLimitButton1.setVisible(false);
                 overdraftLimitLbl.setVisible(false);
                 newOverdraftLimitLbl.setVisible(false);
+                transactionPnl.setVisible(false);
 
             }
         });
@@ -654,6 +668,8 @@ public class Thomond_Bank_GUI {
             }
         });
 
+        //Bank Officer 'Create Customer' Panel Button
+
         createCustomerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -662,15 +678,17 @@ public class Thomond_Bank_GUI {
                 accountCreationTabPane.setVisible(false);
                 changeAIRTabPane.setVisible(false);
                 overDraftTabPane.setVisible(false);
+                transactionPnl.setVisible(false);
 
             }
         });
+
+        //Bank Officer Finalize Create Customer Button
 
         customerCreateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                // Read inputs from text fields
                 String firstName = custFirstNameTxt.getText().trim();
                 String lastName = custLastNameTxt.getText().trim();
                 String address = custAddressTxt.getText().trim();
@@ -742,6 +760,8 @@ public class Thomond_Bank_GUI {
         });
 
 
+        //Bank Officer List all Customers Button
+
         listAllCustomersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -765,6 +785,76 @@ public class Thomond_Bank_GUI {
         });
 
 
+        //ADDITIONAL FEATURE
+        //Bank Officer Show Transactions Button
+
+        allTransactionsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                accountCreationTabPane.setVisible(false);
+                changeAIRTabPane.setVisible(false);
+                overDraftTabPane.setVisible(false);
+                createCustomerPnl.setVisible(false);
+                transactionPnl.setVisible(true);
+
+            }
+        });
+
+
+        //Bank Officer Show Transaction Button
+
+        showTransactionBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                String accountIdInput = transactionAccountTxt.getText().trim();
+
+                if (accountIdInput.isEmpty()) {
+                    JOptionPane.showMessageDialog(transactionPnl,
+                            "Please enter an Account ID.");
+                    return;
+                }
+
+                int accountId=-1;
+
+                try {
+
+                    accountId = Integer.parseInt(accountIdInput);
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(transactionPnl,
+                            "Invalid Account ID format. Please enter a valid numeric value.");
+                    return;
+                }
+
+                Account account = ThomondBank.getAccountById(accountId);
+
+                if (account == null) {
+                    System.out.println("Error: Account not found.");
+                } else {
+
+                    List<Transactions> transactionHistory = account.getTransactionHistory();
+
+                    if (transactionHistory.isEmpty()) {
+                        System.out.println("No transactions found for Account ID: " + accountId);
+                    } else {
+
+                        for (Transactions transaction : transactionHistory) {
+                            System.out.println("Account ID: " + accountId);
+                            System.out.println("Type: " + transaction.getType());
+                            System.out.println("Amount: " + transaction.getAmount());
+                            System.out.println("Date: " + transaction.getTransactionDate());
+
+                            System.out.println("---------");
+                        }
+
+                        transactionAccountTxt.setText("");
+                    }
+                }
+            }
+        });
+
 
         //BANK MANAGER EVENTS
 
@@ -777,7 +867,10 @@ public class Thomond_Bank_GUI {
                 createBankOfficerPnl.setVisible(true);
 
             }
+
+
         });
+
 
 
         //Bank Manager Finalize Create Bank Officer Button
@@ -911,14 +1004,7 @@ public class Thomond_Bank_GUI {
 
 
 
-
-
-
     }
 
 
 }
-
-
-
-

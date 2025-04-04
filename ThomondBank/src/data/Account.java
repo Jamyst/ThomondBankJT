@@ -2,16 +2,15 @@ package data;
 
 import java.time.LocalDate;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-
-import static gui.Thomond_Bank_GUI.thomondAccounts;
+import java.util.List;
 
 public abstract class Account {
     protected int id;
     protected int custNo;
     protected double balance;
     protected LocalDate dateCreated;
+    private final List<Transactions> transactionHistory = new ArrayList<>();
 
     public Account(int id, int custNo, double balance) {
         this.id = id;
@@ -27,7 +26,7 @@ public abstract class Account {
                 return acc;
             }
         }
-        return null; // Return null if account is not found
+        return null;
     }
 
 
@@ -37,6 +36,7 @@ public abstract class Account {
         if (amount > 0) {
             balance += amount;
         }
+
     }
 
     public int getId() {
@@ -50,4 +50,14 @@ public abstract class Account {
 
     public LocalDate getDateCreated() {
         return dateCreated; }
+
+    public void addTransaction(String type, double amount) {
+        Transactions transaction = new Transactions(type, amount);
+        transactionHistory.add(transaction);
+    }
+    public List<Transactions> getTransactionHistory() {
+        return transactionHistory;
+    }
 }
+
+
